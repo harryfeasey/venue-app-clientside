@@ -6,29 +6,31 @@
     </div>
 
 
-    <div v-if = "$route.params.venueId">
-      <div id = "venue">
-        <router-link :to="{ name: 'venues'}">Back to Venues</router-link>
+    <!--<div v-if = "$route.params.venueId">-->
+      <!--<div id = "venue">-->
+        <!--{{getSingleVenue($route.params.venueId)}}-->
+        <!--<router-link :to="{ name: 'venues'}">Back to Venues</router-link>-->
 
-        <br /><br />
+        <!--<br /><br />-->
 
-        <table>
-          <tr>
-            <td>Venue Name</td>
-            <td>Venue City</td>
+        <!--<table>-->
+          <!--<tr>-->
+            <!--<td>Venue Name</td>-->
+            <!--<td>Venue City</td>-->
 
-          </tr>
-          <br/>
-          <tr>
-            <td>{{ getSingleVenue($route.params.venueId).venueName}} </td>
-            <td>{{ getSingleVenue($route.params.venueId).city}}</td>
+          <!--</tr>-->
+          <!--<br/>-->
+          <!--<tr>-->
+            <!--<td>{{ venue.venueName}} </td>-->
+            <!--<td>{{ venue.city}}</td>-->
+            <!--<td>{{ venue.category.categoryName}}</td>-->
 
-          </tr>
+          <!--</tr>-->
 
-        </table>
+        <!--</table>-->
 
-      </div>
-    </div>
+      <!--</div>-->
+    <!--</div>-->
 
     <div v-else>
       <div id = "venues">
@@ -58,7 +60,8 @@
       return{
         error: "",
         errorFlag: false,
-        venues: []
+        venues: [],
+        venue: []
       }
     },
 
@@ -76,12 +79,18 @@
             this.errorFlag = true;
           });
       },
+
       getSingleVenue: function(id){
-        for(let i = 0; i < this.venues.length; i++){
-          if(this.venues[i].venueId == id){
-            return this.venues[i];
-          }
-        }
+
+        this.$http.get('http://localhost:4941/api/v1/venues/'+id)
+          .then(function(response) {
+            this.venue = response.data;
+
+          }, function(error) {
+            this.error = error;
+            this.errorFlag = true;
+          });
+
       }
 
 

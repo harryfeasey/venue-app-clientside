@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import Home from './Home.vue';
 import Venues from './Venues.vue';
+import Venue from './Venue.vue';
 
 
 import VueRouter from 'vue-router';
@@ -27,7 +28,7 @@ const routes = [
   {
     path: '/venues/:venueId',
     name: "venue",
-    component: Venues
+    component: Venue
   }
 
 ];
