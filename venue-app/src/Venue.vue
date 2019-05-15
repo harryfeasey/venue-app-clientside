@@ -7,27 +7,49 @@
 
 
     <div v-if = "$route.params.venueId">
-      <div id = "venue">
-        <router-link :to="{ name: 'venues'}">Back to Venues</router-link>
 
+
+
+
+      <div id = "venue">
+
+        <div>
+          <b-nav>
+            <b-nav-item active><router-link :to="{ name: 'home'}">Home</router-link></b-nav-item>
+            <b-nav-item><router-link :to="{ name: 'venues'}">Venues</router-link></b-nav-item>
+            <b-nav-item>Reviews (WIP)</b-nav-item>
+            <b-nav-item disabled>Logout</b-nav-item>
+          </b-nav>
+        </div>
         <br /><br />
 
-        <table>
-          <tr>
-            <td>Venue Name</td>
-            <td>Venue City</td>
-            <!--<td>Venue Category</td>-->
+        <div>
+          <b-card
+            :title="venue.venueName"
+            :sub-title=venue.city
+            img-src="https://picsum.photos/id/33/536/354"
+            img-alt="Image"
+            img-top
+            tag="article"
+            style="max-width: 20rem;"
+            class="mb-2"
+            :footer=venue.category.categoryName
+            footer-tag="footer"
+          >
+            <!--<b-card-text>-->
+              <!--{{ venue.city}}-->
+            <!--</b-card-text>-->
 
-          </tr>
-          <br/>
-          <tr>
-            <td>{{ venue.venueName}} </td>
-            <td>{{ venue.city}}</td>
-            <!--<td>{{venue.category.categoryName}}</td>-->
 
-          </tr>
+            <b-card-text>
+              {{ venue.shortDescription}}
+              <br/><br/>
+            </b-card-text>
 
-        </table>
+
+            <!--<b-button href="#" variant="primary">Go somewhere</b-button>-->
+          </b-card>
+        </div>
 
       </div>
     </div>
@@ -45,18 +67,19 @@
       return{
         error: "",
         errorFlag: false,
-        venue: []
+        venue: [],
+        id: this.$route.params.venueId
       }
     },
 
     mounted: function(){
-      this.getSingleVenue($route.params.venueId);
+      this.getSingleVenue();
     },
     methods: {
 
-      getSingleVenue: function(id){
+      getSingleVenue: function(){
 
-        this.$http.get('http://localhost:4941/api/v1/venues/'+id)
+        this.$http.get('http://localhost:4941/api/v1/venues/'+this.id)
           .then(function(response) {
             this.venue = response.data;
 

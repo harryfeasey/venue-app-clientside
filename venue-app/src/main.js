@@ -7,9 +7,15 @@ import Venue from './Venue.vue';
 
 import VueRouter from 'vue-router';
 import VueResource from 'vue-resource'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import BootstrapVue from 'bootstrap-vue'
+
 
 Vue.use(VueResource);
 Vue.use(VueRouter);
+Vue.use(BootstrapVue)
+
 
 Vue.http.options.emulateJSON = true;
 
@@ -17,6 +23,7 @@ const routes = [
 
   {
       path: "/",
+      name: "home",
       component: Home
   },
   {
