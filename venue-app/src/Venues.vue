@@ -18,7 +18,7 @@
     <br />
 
     <div v-if = "searchFlag" >
-
+      <b-button variant="outine-primary" v-on:click.prevent="init()">Clear Search</b-button>
       <b-card-group deck>
         <div v-for="venue in searchVenues" >
           <b-card
@@ -33,12 +33,21 @@
             :header=getCategory(venue.venueId)
             header-tag="footer"
           >
-            <b-card-text v-if="venue.meanStarRating">
+            <b-card-text v-if="venue.meanStarRating !== null">
               Mean Stars: {{venue.meanStarRating}}
             </b-card-text>
 
-            <b-card-text v-if="venue.modeCostRating">
+            <b-card-text v-else>
+              Mean Stars: Not rated
+            </b-card-text>
+
+
+            <b-card-text v-if="venue.modeCostRating !== null">
               Mode Cost: {{venue.modeCostRating}}
+            </b-card-text>
+
+            <b-card-text v-else>
+              Mean Cost: Not rated
             </b-card-text>
 
 
@@ -64,15 +73,24 @@
                   tag="article"
                   style="max-width: 20rem;"
                   class="mb-2"
-                  :header=getCategory(venue.venueId)
+                  :header=getCategory(venue.categoryId)
                   header-tag="footer"
                 >
-                  <b-card-text>
+                  <b-card-text v-if="venue.meanStarRating !== null">
                     Mean Stars: {{venue.meanStarRating}}
                   </b-card-text>
 
-                  <b-card-text>
+                  <b-card-text v-else>
+                    Mean Stars: Not rated
+                  </b-card-text>
+
+
+                  <b-card-text v-if="venue.modeCostRating !== null">
                     Mode Cost: {{venue.modeCostRating}}
+                  </b-card-text>
+
+                  <b-card-text v-else>
+                    Mean Cost: Not rated
                   </b-card-text>
 
 
@@ -110,6 +128,7 @@
     },
     methods: {
       init: function(){
+        this.searchFlag =  false;
         this.$http.get('http://localhost:4941/api/v1/venues')
           .then(function(response) {
             this.venues = response.data;
@@ -133,9 +152,9 @@
       },
 
       getCategory: function(id){
-        for (var i = 0; i < this.venues.length; i++){
+        for (var i = 0; i < this.categories.length; i++){
 
-          if(this.categories[i].categoryId == id ){
+          if(this.categories[i].categoryId === id ){
             return this.categories[i].categoryName;
           }
 

@@ -26,10 +26,23 @@
             :footer=venue.category.categoryName
             footer-tag="footer"
           >
-            <!--<b-card-text>-->
-              <!--{{ venue.city}}-->
-            <!--</b-card-text>-->
 
+            <b-card-text v-if="venue.meanStarRating !== null">
+              Mean Stars: {{venue.meanStarRating}}
+            </b-card-text>
+
+            <b-card-text v-else>
+              Mean Stars: Not rated
+            </b-card-text>
+
+
+            <b-card-text v-if="venue.modeCostRating !== null">
+              Mode Cost: {{venue.modeCostRating}}
+            </b-card-text>
+
+            <b-card-text v-else>
+              Mean Cost: Not rated
+            </b-card-text>
 
             <b-card-text>
               {{ venue.shortDescription}}
