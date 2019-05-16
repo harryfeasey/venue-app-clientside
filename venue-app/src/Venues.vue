@@ -5,14 +5,14 @@
     <div>
       <b-form-input v-model="searchQuery" placeholder="Search by venue name..."></b-form-input>
       <br />
-      <!--//TODO Add City selection field-->
+      <b-form-select v-model="selected" :options=cities></b-form-select>
       <!--//TODO Add Stars selection field-->
       <!--//TODO Add Cost selection field-->
       <b-button variant="primary" v-on:click.prevent="searchForVenues(searchQuery)">Search</b-button>
     </div>
 
     <div v-if = "errorFlag" style="color: red;">
-      {{ error }}
+      Error retrieving venues.
     </div>
 
     <br />
@@ -118,6 +118,7 @@
         venues: [],
         searchVenues: [],
         categories: [],
+        cities: [{value: null, text: 'Please select an option' }],
         searchQuery: '',
         searchFlag: false
       }
@@ -129,10 +130,13 @@
     methods: {
       init: function(){
         this.searchFlag =  false;
-        this.$http.get('http://localhost:4941/api/v1/venues')
+        // this.$http.get('http://localhost:4941/api/v1/venues')
+        this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/venues')
           .then(function(response) {
             this.venues = response.data;
+
             this.getCategories();
+            this.getCities();
 
           }, function(error) {
             this.error = error;
@@ -141,7 +145,8 @@
       },
 
       getCategories: function(){
-        this.$http.get('http://localhost:4941/api/v1/categories')
+        // this.$http.get('http://localhost:4941/api/v1/categories')
+        this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/categories')
           .then(function(response) {
             this.categories = response.data;
 
@@ -149,6 +154,16 @@
             this.error = error;
             this.errorFlag = true;
           });
+      },
+
+      getCities: function(){
+        // this.$http.get('http://localhost:4941/api/v1/categories')
+        for(var i = 0; i <  this.venues.length; i++){
+          this.cities.push({
+            value: this.venues[i].city,
+            text: this.venues[i].city
+          },)
+        }
       },
 
       getCategory: function(id){
@@ -161,10 +176,11 @@
         }
       },
 
-      //Make this general for all searches.
+      //TODO Make this general for all searches.
       searchForVenues: function(query){
         if(query.trim() !== "") {
-          this.$http.get('http://localhost:4941/api/v1/venues?q=' + query)
+          // this.$http.get('http://localhost:4941/api/v1/venues?q=' + query)
+          this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/venues?q=' + query)
             .then(function (response) {
               this.searchVenues = response.data;
               this.getCategories();

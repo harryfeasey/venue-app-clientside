@@ -2,14 +2,11 @@
   <div>
 
     <div v-if = "errorFlag" style="color: red;">
-      {{ error }}
+      Error retrieving this venue.
     </div>
 
 
     <div v-if = "$route.params.venueId">
-
-
-
 
       <div id = "venue">
 
@@ -82,7 +79,8 @@
 
       getSingleVenue: function(){
 
-        this.$http.get('http://localhost:4941/api/v1/venues/'+this.id)
+        // this.$http.get('http://localhost:4941/api/v1/venues/'+this.id)
+        this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/venues/'+this.id)
           .then(function(response) {
             this.venue = response.data;
 
