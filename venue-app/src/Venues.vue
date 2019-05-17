@@ -3,9 +3,12 @@
 
 
     <div>
+      <div class="mt-1"><strong>Venues</strong></div>
+      <div class="mt-3">Filter:</div>
       <b-form-input v-model="searchQuery" placeholder="Search by venue name..."></b-form-input>
       <br />
-      <b-form-select v-model="selected" :options=cities></b-form-select>
+      <b-form-select v-model="selected" :options="cities"></b-form-select>
+      <div class="mt-3">Selected: <strong>{{ selected }}</strong></div>
       <!--//TODO Add Stars selection field-->
       <!--//TODO Add Cost selection field-->
       <b-button variant="primary" v-on:click.prevent="searchForVenues(searchQuery)">Search</b-button>
@@ -118,9 +121,14 @@
         venues: [],
         searchVenues: [],
         categories: [],
-        cities: [{value: null, text: 'Please select an option' }],
         searchQuery: '',
-        searchFlag: false
+        searchFlag: false,
+
+        selected: null,
+        cities: [
+          { value: null, text: 'Please select a City' },
+        ]
+
       }
     },
 
@@ -157,7 +165,7 @@
       },
 
       getCities: function(){
-        // this.$http.get('http://localhost:4941/api/v1/categories')
+
         for(var i = 0; i <  this.venues.length; i++){
           this.cities.push({
             value: this.venues[i].city,
