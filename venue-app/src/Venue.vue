@@ -69,6 +69,7 @@
         errorFlag: false,
         venue: [],
         id: this.$route.params.venueId
+
       }
     },
 
@@ -79,8 +80,8 @@
 
       getSingleVenue: function(){
 
-        // this.$http.get('http://localhost:4941/api/v1/venues/'+this.id)
-        this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/venues/'+this.id)
+        this.$http.get('http://localhost:4941/api/v1/venues/'+this.id)
+        // this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/venues/'+this.id)
           .then(function(response) {
             this.venue = response.data;
 

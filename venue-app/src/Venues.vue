@@ -3,70 +3,72 @@
 
 
     <div>
-      <div class="mt-1"><strong>Venues</strong></div>
-      <div class="mt-3">Filter:</div>
-      <b-form-input v-model="searchQuery" placeholder="Search by venue name..."></b-form-input>
-      <br />
-      <b-form-select v-model="selected" :options="cities"></b-form-select>
-      <div class="mt-3">Selected: <strong>{{ selected }}</strong></div>
-      <!--//TODO Add Stars selection field-->
-      <!--//TODO Add Cost selection field-->
-      <b-button variant="primary" v-on:click.prevent="searchForVenues(searchQuery)">Search</b-button>
+      <b-container>
+        <b-row>
+
+          <b-col>
+            <label for="search">Name</label>
+            <b-form-input id="search" v-model="searchQuery" v-on:input="searchForVenues()" placeholder="Search by venue name..."></b-form-input>
+            <br />
+          </b-col>
+          <b-col>
+            <label for="city-list">City</label>
+            <b-form-input v-model="cityQuery" v-on:input="searchForVenues()" placeholder="Search by venue city..." list="city-data-list" id="city-list"></b-form-input>
+            <b-form-datalist id="city-data-list" :options="cityOptions"></b-form-datalist>
+          </b-col>
+
+          <b-col>
+            <label>Category</label>
+            <b-form-select v-model="categoryQuery" v-on:input="searchForVenues()" class="mb-3">
+              <option :value="null">Search by venue category...</option>
+              <option v-for="category in categories"  :value =category.categoryId>{{category.categoryName}}</option>
+            </b-form-select>
+          </b-col>
+
+          <b-col>
+            <label>Sort By</label>
+            <b-form-select v-model="sortByQuery" v-on:input="searchForVenues()" class="mb-3">
+              <option value ="STAR_RATING">Star Rating</option>
+              <option value ="COST_RATING">Cost Rating</option>
+              <option disabled value ="DISTANCE">Distance</option>
+            </b-form-select>
+
+            <b-form-checkbox
+              id="checkbox-1"
+              v-model="reverseQuery"
+              v-on:input="searchForVenues()"
+              name="checkbox-1"
+              value=true
+              unchecked-value=false
+
+            >
+              Reverse sort
+            </b-form-checkbox>
+
+
+            <!--//TODO Add Stars selection field-->
+            <!--//TODO Add Cost selection field-->
+          </b-col>
+        </b-row>
+        <!--<b-button variant="primary" v-on:click.prevent="searchForVenues()">Search</b-button>-->
+        <b-button :disabled = !searchFlag variant="primary" v-on:click.prevent="init()">Clear Search</b-button>
+      </b-container>
+
     </div>
 
     <div v-if = "errorFlag" style="color: red;">
-      Error retrieving venues.
+      Error retrieving venues: {{error}}
     </div>
 
     <br />
 
     <div v-if = "searchFlag" >
-      <b-button variant="outine-primary" v-on:click.prevent="init()">Clear Search</b-button>
-      <b-card-group deck>
-        <div v-for="venue in searchVenues" >
-          <b-card
-            :title="venue.venueName"
-            :sub-title="venue.city"
-            img-src="https://picsum.photos/id/33/536/354"
-            img-alt="Image"
-            img-top
-            tag="article"
-            style="max-width: 20rem;"
-            class="mb-2"
-            :header=getCategory(venue.venueId)
-            header-tag="footer"
-          >
-            <b-card-text v-if="venue.meanStarRating !== null">
-              Mean Stars: {{venue.meanStarRating}}
-            </b-card-text>
+      <b-container>
+        <b-row>
+          <b-col>
 
-            <b-card-text v-else>
-              Mean Stars: Not rated
-            </b-card-text>
-
-
-            <b-card-text v-if="venue.modeCostRating !== null">
-              Mode Cost: {{venue.modeCostRating}}
-            </b-card-text>
-
-            <b-card-text v-else>
-              Mean Cost: Not rated
-            </b-card-text>
-
-
-            <b-button variant="primary" v-on:click.prevent="reroute(venue)">View</b-button>
-          </b-card>
-        </div>
-
-      </b-card-group>
-
-
-    </div>
-
-    <div v-else>
-      <div id = "venues">
-        <b-card-group deck>
-              <div v-for="venue in venues">
+            <b-card-group deck>
+              <div v-for="venue in searchVenues" >
                 <b-card
                   :title="venue.venueName"
                   :sub-title="venue.city"
@@ -84,7 +86,7 @@
                   </b-card-text>
 
                   <b-card-text v-else>
-                    Mean Stars: Not rated
+                    Mean Stars: <i>Not rated</i>
                   </b-card-text>
 
 
@@ -93,7 +95,7 @@
                   </b-card-text>
 
                   <b-card-text v-else>
-                    Mean Cost: Not rated
+                    Mode Cost: <i>Not rated</i>
                   </b-card-text>
 
 
@@ -101,8 +103,62 @@
                 </b-card>
               </div>
 
-        </b-card-group>
-      </div>
+            </b-card-group>
+          </b-col>
+        </b-row>
+      </b-container>
+
+
+    </div>
+
+    <div v-else>
+      <b-container>
+        <b-row>
+          <b-col>
+            <div id = "venues">
+              <b-card-group deck>
+                    <div v-for="venue in venues">
+
+
+                      <b-card
+                        :title="venue.venueName"
+                        :sub-title="venue.city"
+                        img-src="https://picsum.photos/id/33/536/354"
+                        img-alt="Image"
+                        img-top
+                        tag="article"
+                        style="max-width: 20rem;"
+                        class="mb-2"
+                        :header=getCategory(venue.categoryId)
+                        header-tag="footer"
+                      >
+                        <b-card-text v-if="venue.meanStarRating !== null">
+                          Mean Stars: {{venue.meanStarRating}}
+                        </b-card-text>
+
+                        <b-card-text v-else>
+                          Mean Stars: <i>Not rated</i>
+                        </b-card-text>
+
+
+                        <b-card-text v-if="venue.modeCostRating !== null">
+                          Mode Cost: {{venue.modeCostRating}}
+                        </b-card-text>
+
+                        <b-card-text v-else>
+                          Mode Cost: <i>Not rated</i>
+                        </b-card-text>
+
+
+                        <b-button variant="primary" v-on:click.prevent="reroute(venue)">View</b-button>
+                      </b-card>
+                    </div>
+
+              </b-card-group>
+            </div>
+          </b-col>
+        </b-row>
+      </b-container>
     </div>
   </div>
 
@@ -110,7 +166,7 @@
 </template>
 
 
-
+<!--=====================================================V-U-E===================================================================-->
 
 <script>
   export default {
@@ -121,13 +177,18 @@
         venues: [],
         searchVenues: [],
         categories: [],
+
+
+        reverseQuery: false,
         searchQuery: '',
+        cityQuery: '',
+        categoryQuery: null,
+        sortByQuery: "STAR_RATING",
         searchFlag: false,
 
         selected: null,
-        cities: [
-          { value: null, text: 'Please select a City' },
-        ]
+        cityOptions: [],
+        catOptions: []
 
       }
     },
@@ -138,13 +199,22 @@
     methods: {
       init: function(){
         this.searchFlag =  false;
-        // this.$http.get('http://localhost:4941/api/v1/venues')
-        this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/venues')
+        this.$http.get('http://localhost:4941/api/v1/venues')
+        // this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/venues')
           .then(function(response) {
             this.venues = response.data;
 
+
+            //Initialise UI auto fill.
             this.getCategories();
-            this.getCities();
+            this.getCategoriesList();
+            this.getCitiesList();
+
+            //Reset some variables.
+            this.categoryQuery = null;
+            this.sortByQuery = "STAR_RATING";
+            this.reverseQuery = false;
+            this.searchFlag = false;
 
           }, function(error) {
             this.error = error;
@@ -152,9 +222,55 @@
           });
       },
 
+
+
+
+      //TODO Make this general for all searches.
+      searchForVenues: function(){
+        let queries = "";
+
+        if(this.searchQuery !== null && this.searchQuery.trim() !== "") {
+          queries += "&q=" + this.searchQuery
+        }
+
+        if(this.cityQuery !== null&& this.cityQuery.trim() !== "") {
+          queries += "&city=" + this.cityQuery
+        }
+
+        if(this.categoryQuery !== null) {
+          queries += "&categoryId=" + this.categoryQuery;
+
+        }
+
+        if(this.sortByQuery !== null) {
+          queries += "&sortBy=" + this.sortByQuery;
+
+        }
+
+        if(this.reverseQuery) {
+          queries += "&reverseSort=" + this.reverseQuery;
+
+        }
+
+
+
+        this.$http.get('http://localhost:4941/api/v1/venues?' + queries.slice(1))
+        .then(function (response) {
+            this.searchVenues = response.data;
+            this.getCategories();
+            this.searchFlag = true;
+
+          }, function (error) {
+            this.error = error;
+            this.errorFlag = true;
+          });
+
+      },
+
+
       getCategories: function(){
-        // this.$http.get('http://localhost:4941/api/v1/categories')
-        this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/categories')
+        this.$http.get('http://localhost:4941/api/v1/categories')
+        // this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/categories')
           .then(function(response) {
             this.categories = response.data;
 
@@ -164,14 +280,33 @@
           });
       },
 
-      getCities: function(){
+      getCategoriesList: function(){
+
+        let unique = new Set();
+
+        for(var i = 0; i <  this.categories.length; i++){
+
+          unique.add(this.categories[i].categoryName);
+
+        }
+
+        this.catOptions = Array.from(unique);
+
+      },
+
+
+      getCitiesList: function(){
+
+        let unique = new Set();
 
         for(var i = 0; i <  this.venues.length; i++){
-          this.cities.push({
-            value: this.venues[i].city,
-            text: this.venues[i].city
-          },)
+
+          unique.add(this.venues[i].city);
+
         }
+
+        this.cityOptions = Array.from(unique);
+
       },
 
       getCategory: function(id){
@@ -183,24 +318,6 @@
 
         }
       },
-
-      //TODO Make this general for all searches.
-      searchForVenues: function(query){
-        if(query.trim() !== "") {
-          // this.$http.get('http://localhost:4941/api/v1/venues?q=' + query)
-          this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/venues?q=' + query)
-            .then(function (response) {
-              this.searchVenues = response.data;
-              this.getCategories();
-              this.searchFlag = true;
-
-            }, function (error) {
-              this.error = error;
-              this.errorFlag = true;
-            });
-        }
-      },
-
 
       reroute(venue) {
         this.$router.push({ name: 'venue', params: { venueId: venue.venueId }})
