@@ -14,11 +14,11 @@
           <b-card
             :title="venue.venueName"
             :sub-title=venue.city
-            img-src="https://picsum.photos/id/33/536/354"
+            img-src="src/assets/no-image.jpg"
             img-alt="Image"
             img-top
             tag="article"
-            style="max-width: 20rem;"
+            style="max-width: 50rem;"
             class="mb-2"
             :footer=venue.category.categoryName
             footer-tag="footer"
@@ -90,7 +90,18 @@
             this.errorFlag = true;
           });
 
-      }
+      },
+      getImage: function(venue){
+
+        if (venue.photos !=null) {
+          for (let i = 0; i< venue.photos.length(); i++) {
+            if(venue.photos[i].isPrimary) {
+              return "http://localhost:4941/api/v1/venues/" + venue.venueId + "/photos/" + venue.photos[i].photoFilename
+            }
+          }
+          return "src/assets/no-image.jpg"
+        }
+      },
 
     }
   }

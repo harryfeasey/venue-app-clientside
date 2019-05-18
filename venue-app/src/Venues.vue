@@ -17,7 +17,7 @@
                   id="btn-radios-3"
                   v-on:input="searchForVenues()"
                   v-model="maxCostQuery"
-                  :options=maxCostOptions
+                  :options="maxCostOptions"
                   buttons
                   button-variant="outline-primary"
                   name="radio-btn-stacked"
@@ -57,7 +57,7 @@
           <b-col>
             <label>Category</label>
             <b-form-select v-model="categoryQuery" v-on:input="searchForVenues()" class="mb-3">
-              <option :value="null">Search by venue category...</option>
+              <option :value="null">Search by category...</option>
               <option v-for="category in categories"  :value =category.categoryId>{{category.categoryName}}</option>
             </b-form-select>
           </b-col>
@@ -67,7 +67,7 @@
             <b-form-select v-model="sortByQuery" v-on:input="searchForVenues()" class="mb-3">
               <option value ="STAR_RATING">Star Rating</option>
               <option value ="COST_RATING">Cost Rating</option>
-              <option :disabled = isLocated value ="DISTANCE">Distance</option>
+              <option :disabled = "notLocated" value ="DISTANCE">Distance</option>
             </b-form-select>
 
             <b-form-checkbox
@@ -81,11 +81,6 @@
             >
               Reverse sort
             </b-form-checkbox>
-
-
-
-            <!--//TODO Add Stars selection field-->
-            <!--//TODO Add Cost selection field-->
           </b-col>
         </b-row>
         <!--<b-button variant="primary" v-on:click.prevent="searchForVenues()">Search</b-button>-->
@@ -112,9 +107,9 @@
             <b-card-group deck>
               <div v-for="venue in searchVenues" >
                 <b-card
-                  :title="venue.venueName"
+                  :title="venue['venueName']"
                   :sub-title="venue.city"
-                  img-src="https://picsum.photos/id/33/536/354"
+                  :img-src=getImage(venue)
                   img-alt="Image"
                   img-top
                   tag="article"
@@ -124,7 +119,7 @@
                   header-tag="footer"
                 >
                   <b-card-text v-if="venue.meanStarRating !== null">
-                    Mean Stars: {{venue.meanStarRating}}
+                    Mean Stars: {{venue.meanStarRating.toFixed(1)}}
                   </b-card-text>
 
                   <b-card-text v-else>
@@ -133,13 +128,16 @@
 
 
                   <b-card-text v-if="venue.modeCostRating !== null">
-                    Mode Cost: {{venue.modeCostRating}}
+                    Mode Cost: {{venue.modeCostRating.toFixed(1)}}
                   </b-card-text>
 
                   <b-card-text v-else>
                     Mode Cost: <i>Not rated</i>
                   </b-card-text>
 
+                  <b-card-text v-if="venue.distance !== ''">
+                    <i>Distance: {{venue.distance.toFixed(1)}} km</i>
+                  </b-card-text>
 
                   <b-button variant="primary" v-on:click.prevent="reroute(venue)">View</b-button>
                 </b-card>
@@ -165,7 +163,7 @@
                       <b-card
                         :title="venue.venueName"
                         :sub-title="venue.city"
-                        img-src="https://picsum.photos/id/33/536/354"
+                        :img-src=getImage(venue)
                         img-alt="Image"
                         img-top
                         tag="article"
@@ -175,7 +173,7 @@
                         header-tag="footer"
                       >
                         <b-card-text v-if="venue.meanStarRating !== null">
-                          Mean Stars: {{venue.meanStarRating}}
+                          Mean Stars: {{venue.meanStarRating.toFixed(1)}}
                         </b-card-text>
 
                         <b-card-text v-else>
@@ -184,11 +182,15 @@
 
 
                         <b-card-text v-if="venue.modeCostRating !== null">
-                          Mode Cost: {{venue.modeCostRating}}
+                          Mode Cost: {{venue.modeCostRating.toFixed(1)}}
                         </b-card-text>
 
                         <b-card-text v-else>
                           Mode Cost: <i>Not rated</i>
+                        </b-card-text>
+
+                        <b-card-text v-if="venue.distance != null">
+                          <i>Distance: {{venue.distance.toFixed(1)}} km</i>
                         </b-card-text>
 
 
@@ -229,7 +231,7 @@
         searchFlag: false,
         maxCostQuery: null,
         minStarsQuery: null,
-        isLocated: false,
+        notLocated: true,
         clientLat: null,
         clientLong: null,
 
@@ -258,7 +260,14 @@
     },
 
     mounted: function(){
+
+      //Check if the user has allowed location.
+      this.getLocation();
       this.init();
+
+      //Refresh the search with user's coords included
+
+
     },
     methods: {
       init: function(){
@@ -281,8 +290,6 @@
             this.maxCostQuery = null;
             this.minStarsQuery = null;
 
-            //Check if the user has allowed location.
-            this.getLocation();
 
           }, function(error) {
             this.error = error;
@@ -313,7 +320,8 @@
         if(this.sortByQuery !== null) {
           queries += "&sortBy=" + this.sortByQuery;
 
-          if(this.isLocated){
+
+          if(this.clientLat !== null && this.clientLong !== null){
             queries += "&myLatitude=" + this.clientLat;
             queries += "&myLongitude=" + this.clientLong;
           }
@@ -402,19 +410,32 @@
         }
       },
 
+      getImage: function(venue){
+        if (venue.primaryPhoto !=null) {
+          return "http://localhost:4941/api/v1/venues/"+venue.venueId+"/photos/"+venue.primaryPhoto
+        } else{
+          return "src/assets/no-image.jpg"
+        }
+      },
+
+
       getLocation: function(){
 
           if ("geolocation" in navigator) {
 
-            this.isLocated = true;
-            navigator.geolocation.getCurrentPosition(function(position) {
+
+            console.log(this.notLocated);
+            this.clientLat = navigator.geolocation.getCurrentPosition((position) => {
               this.clientLat = position.coords.latitude;
               this.clientLong = position.coords.longitude;
+              this.notLocated = false;
             });
 
-          } else {
-            /* geolocation IS NOT available */
-            this.isLocated = false;
+
+
+
+          } else{
+            this.notLocated = true;
           }
 
         },
