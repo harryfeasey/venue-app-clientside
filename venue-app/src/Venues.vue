@@ -7,14 +7,51 @@
         <b-row>
 
           <b-col>
-            <label for="search">Name</label>
-            <b-form-input id="search" v-model="searchQuery" v-on:input="searchForVenues()" placeholder="Search by venue name..."></b-form-input>
-            <br />
+            <label for="search">Venue Name</label>
+            <b-form-input id="search" v-model="searchQuery" v-on:input="searchForVenues()" placeholder="Search by name..."></b-form-input>
+            <div>
+              <br>
+
+              <b-form-group label="Max Cost Rating">
+                <b-form-radio-group
+                  id="btn-radios-3"
+                  v-on:input="searchForVenues()"
+                  v-model="maxCostQuery"
+                  :options=maxCostOptions
+                  buttons
+                  button-variant="outline-primary"
+                  name="radio-btn-stacked"
+                ></b-form-radio-group>
+              </b-form-group>
+
+
+
+            </div>
           </b-col>
           <b-col>
             <label for="city-list">City</label>
-            <b-form-input v-model="cityQuery" v-on:input="searchForVenues()" placeholder="Search by venue city..." list="city-data-list" id="city-list"></b-form-input>
+            <b-form-input v-model="cityQuery" v-on:input="searchForVenues()" placeholder="Search by city..." list="city-data-list" id="city-list"></b-form-input>
             <b-form-datalist id="city-data-list" :options="cityOptions"></b-form-datalist>
+
+            <div>
+              <br>
+
+              <b-form-group label="Min Star Rating">
+                <b-form-radio-group
+                  id="btn-radios-4"
+                  v-on:input="searchForVenues()"
+                  v-model="minStarsQuery"
+                  :options=minStarsOptions
+                  buttons
+                  button-variant="outline-primary"
+                  name="radio-btn-stacked"
+                ></b-form-radio-group>
+              </b-form-group>
+
+
+            </div>
+
+
           </b-col>
 
           <b-col>
@@ -30,7 +67,7 @@
             <b-form-select v-model="sortByQuery" v-on:input="searchForVenues()" class="mb-3">
               <option value ="STAR_RATING">Star Rating</option>
               <option value ="COST_RATING">Cost Rating</option>
-              <option disabled value ="DISTANCE">Distance</option>
+              <option :disabled = isLocated value ="DISTANCE">Distance</option>
             </b-form-select>
 
             <b-form-checkbox
@@ -46,6 +83,7 @@
             </b-form-checkbox>
 
 
+
             <!--//TODO Add Stars selection field-->
             <!--//TODO Add Cost selection field-->
           </b-col>
@@ -53,6 +91,10 @@
         <!--<b-button variant="primary" v-on:click.prevent="searchForVenues()">Search</b-button>-->
         <b-button :disabled = !searchFlag variant="primary" v-on:click.prevent="init()">Clear Search</b-button>
       </b-container>
+
+
+
+
 
     </div>
 
@@ -185,6 +227,28 @@
         categoryQuery: null,
         sortByQuery: "STAR_RATING",
         searchFlag: false,
+        maxCostQuery: null,
+        minStarsQuery: null,
+        isLocated: false,
+        clientLat: null,
+        clientLong: null,
+
+
+        maxCostOptions: [
+          { text: '0 Free ', value: 0},
+          { text: '1 Low', value: 1},
+          { text: '2 Med', value: 2},
+          { text: '3 High', value: 3},
+          { text: '4 Max', value: 4},
+          ],
+
+        minStarsOptions: [
+          { text: '1 Star', value: 1},
+          { text: '2 Stars', value: 2},
+          { text: '3 Stars', value: 3},
+          { text: '4 Stars', value: 4},
+          { text: '5 Stars', value: 5},
+        ],
 
         selected: null,
         cityOptions: [],
@@ -214,7 +278,11 @@
             this.categoryQuery = null;
             this.sortByQuery = "STAR_RATING";
             this.reverseQuery = false;
-            this.searchFlag = false;
+            this.maxCostQuery = null;
+            this.minStarsQuery = null;
+
+            //Check if the user has allowed location.
+            this.getLocation();
 
           }, function(error) {
             this.error = error;
@@ -245,10 +313,25 @@
         if(this.sortByQuery !== null) {
           queries += "&sortBy=" + this.sortByQuery;
 
+          if(this.isLocated){
+            queries += "&myLatitude=" + this.clientLat;
+            queries += "&myLongitude=" + this.clientLong;
+          }
+
+
         }
 
         if(this.reverseQuery) {
           queries += "&reverseSort=" + this.reverseQuery;
+
+        }
+        if(this.minStarsQuery !== null) {
+          queries += "&minStarRating=" + this.minStarsQuery.toString();
+
+        }
+
+        if(this.maxCostQuery !== null) {
+          queries += "&maxCostRating=" + this.maxCostQuery.toString();
 
         }
 
@@ -318,6 +401,24 @@
 
         }
       },
+
+      getLocation: function(){
+
+          if ("geolocation" in navigator) {
+
+            this.isLocated = true;
+            navigator.geolocation.getCurrentPosition(function(position) {
+              this.clientLat = position.coords.latitude;
+              this.clientLong = position.coords.longitude;
+            });
+
+          } else {
+            /* geolocation IS NOT available */
+            this.isLocated = false;
+          }
+
+        },
+
 
       reroute(venue) {
         this.$router.push({ name: 'venue', params: { venueId: venue.venueId }})

@@ -14,8 +14,8 @@ import BootstrapVue from 'bootstrap-vue'
 
 Vue.use(VueResource);
 Vue.use(VueRouter);
-Vue.use(BootstrapVue)
-
+Vue.use(BootstrapVue);
+Vue.config.silent = true;
 
 Vue.http.options.emulateJSON = true;
 
