@@ -86,30 +86,35 @@
             <hr />
             <div v-if="venue.photos.length >= 1">
 
-              <strong>Photos: </strong>
-                <div v-for="photo in venue.photos">
-
-                  <b-img-lazy style="width: 200px; height: 200px" v-bind="mainProps" :src="getImage(photo)" alt="Image 8"></b-img-lazy>
 
 
 
-                </div>
+              <b-container fluid class="p-4 bg-dark">
+                <b-row>
+                  <b-col v-for="photo in venue.photos">
 
-              <br />
-              <hr />
-              Admin user:
-              <i>{{venue.admin.username}}</i>
+                  <b-img-lazy thumbnail left style="max-width: 300px; max-height: 300px; padding: 10px" v-bind="mainProps" :src="getImage(photo)" :alt=photo.photoDescription></b-img-lazy>
 
-              <br />
-              Added:
-              <i>{{new Date(venue.dateAdded).toDateString()}}</i>
+                  </b-col>
+                </b-row>
+              </b-container>
+
             </div>
+
 
             <div v-else>
               <br />
               <strong>Photos:  None available</strong>
 
             </div>
+            <br />
+            <hr />
+            Admin user:
+            <i>{{venue.admin.username}}</i>
+
+            <br />
+            Added:
+            <i>{{new Date(venue.dateAdded).toDateString()}}</i>
 
           </b-jumbotron>
         </div>
