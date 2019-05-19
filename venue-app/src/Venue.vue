@@ -6,49 +6,84 @@
     </div>
 
 
-    <div v-if = "$route.params.venueId">
+    <div v-else-if= "$route.params.venueId">
 
       <div id = "venue">
 
         <div>
-          <b-card
-            :title="venue.venueName"
-            :sub-title=venue.city
-            img-src="src/assets/no-image.jpg"
-            img-alt="Image"
-            img-top
-            tag="article"
-            style="max-width: 50rem;"
-            class="mb-2"
-            :footer=venue.category.categoryName
-            footer-tag="footer"
-          >
-
-            <b-card-text v-if="venue.meanStarRating !== null">
-              Mean Stars: {{venue.meanStarRating}}
-            </b-card-text>
-
-            <b-card-text v-else>
-              Mean Stars: Not rated
-            </b-card-text>
+          <b-jumbotron>
+            <template slot="lead">{{venue.venueName}}, {{venue.city}}</template>
 
 
-            <b-card-text v-if="venue.modeCostRating !== null">
-              Mode Cost: {{venue.modeCostRating}}
-            </b-card-text>
-
-            <b-card-text v-else>
-              Mean Cost: Not rated
-            </b-card-text>
-
-            <b-card-text>
-              {{ venue.shortDescription}}
-              <br/><br/>
-            </b-card-text>
+            <hr class="my-4">
 
 
-            <!--<b-button href="#" variant="primary">Go somewhere</b-button>-->
-          </b-card>
+
+            <p>
+              <strong>Address: </strong><i>{{venue.address}}</i><br /><br />
+              <strong>Category: </strong><i>{{venue.category.categoryName}}</i><br /><br />
+
+              <strong>Description:</strong><br />
+              {{venue.shortDescription}}
+            </p>
+
+
+
+            <div v-if="venue.longDescription != ''&& venue.longDescription != null">
+              <b-button v-b-modal.modal-center>See More</b-button>
+
+              <b-modal id="modal-center" centered title="More Info">
+                <p  class="my-4">{{venue.shortDescription}}<br /><br />{{venue.longDescription}}</p>
+              </b-modal>
+
+            </div>
+
+            <div v-else>
+              <b-button disabled="true" >See more</b-button>
+            </div>
+
+            <p>
+              <br />
+              <br />
+              <strong>Ratings: </strong>
+              <br />
+              Mode Cost:
+              <i>{{cost}}</i>
+              <br />
+
+              Mean Stars:
+                <i>{{stars}}</i>
+
+
+            </p>
+
+
+            <div v-if="venue.photos.length >= 1">
+
+              <strong>Photos: </strong>
+                <div v-for="photo in venue.photos">
+
+                  <b-img-lazy style="width: 200px; height: 200px" v-bind="mainProps" :src="getImage(photo)" alt="Image 8"></b-img-lazy>
+
+
+
+                </div>
+
+              <br />
+              Administered by:
+              <i>{{venue.admin.username}}</i>
+
+              <br />
+              Added:
+              <i>{{venue.dateAdded}}</i>
+            </div>
+
+            <div v-else>
+              <strong>Photos:  None available</strong>
+
+            </div>
+
+          </b-jumbotron>
         </div>
 
       </div>
@@ -62,18 +97,25 @@
 
 
 <script>
+  import BCardImgLazy from "bootstrap-vue/es/components/card";
+  import BCarousel from "bootstrap-vue/es/components/carousel";
   export default {
+    components: {BCarousel, BCardImgLazy},
     data (){
       return{
         error: "",
         errorFlag: false,
         venue: [],
-        id: this.$route.params.venueId
+        id: this.$route.params.venueId,
+        stars: null,
+        cost: null
+
 
       }
     },
 
     mounted: function(){
+      this.getRatings()
       this.getSingleVenue();
     },
     methods: {
@@ -91,16 +133,33 @@
           });
 
       },
-      getImage: function(venue){
 
-        if (venue.photos !=null) {
-          for (let i = 0; i< venue.photos.length(); i++) {
-            if(venue.photos[i].isPrimary) {
-              return "http://localhost:4941/api/v1/venues/" + venue.venueId + "/photos/" + venue.photos[i].photoFilename
+      getRatings: function(){
+        this.searchFlag =  false;
+        this.$http.get('http://localhost:4941/api/v1/venues')
+        // this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/venues')
+          .then(function(response) {
+            this.venues = response.data;
+
+            for(let i = 0; i < this.venues.length; i++){
+              if( this.venues[i].venueId == this.id){
+                this.stars = this.venues[i].meanStarRating;
+                this.cost =  this.venues[i].modeCostRating;
+              }
             }
-          }
-          return "src/assets/no-image.jpg"
-        }
+
+
+          }, function(error) {
+            this.error = error;
+            this.errorFlag = true;
+          });
+      },
+
+
+      getImage: function(photo){
+
+        return "http://localhost:4941/api/v1/venues/" + this.id + "/photos/" + photo.photoFilename
+
       },
 
     }
