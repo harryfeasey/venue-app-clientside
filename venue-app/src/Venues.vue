@@ -16,7 +16,7 @@
                 <b-form-radio-group
                   id="btn-radios-3"
                   v-on:input="searchForVenues()"
-                  v-model="maxCostQuery"
+                  :v-model=maxCostQuery
                   :options="maxCostOptions"
                   buttons
                   button-variant="outline-primary"
@@ -30,8 +30,8 @@
           </b-col>
           <b-col>
             <label for="city-list">City</label>
-            <b-form-input v-model="cityQuery" v-on:input="searchForVenues()" placeholder="Search by city..." list="city-data-list" id="city-list"></b-form-input>
-            <b-form-datalist id="city-data-list" :options="cityOptions"></b-form-datalist>
+            <b-form-input :v-model=cityQuery v-on:input="searchForVenues()" placeholder="Search by city..." list="city-data-list" id="city-list"></b-form-input>
+            <b-form-datalist id="city-data-list" :options=cityOptions></b-form-datalist>
 
             <div>
               <br>
@@ -40,7 +40,7 @@
                 <b-form-radio-group
                   id="btn-radios-4"
                   v-on:input="searchForVenues()"
-                  v-model="minStarsQuery"
+                  :v-model=minStarsQuery
                   :options=minStarsOptions
                   buttons
                   button-variant="outline-primary"
@@ -56,7 +56,7 @@
 
           <b-col>
             <label>Category</label>
-            <b-form-select v-model="categoryQuery" v-on:input="searchForVenues()" class="mb-3">
+            <b-form-select :v-model=categoryQuery v-on:input="searchForVenues()" class="mb-3">
               <option :value="null">Search by category...</option>
               <option v-for="category in categories"  :value =category.categoryId>{{category.categoryName}}</option>
             </b-form-select>
@@ -64,7 +64,7 @@
 
           <b-col>
             <label>Sort By</label>
-            <b-form-select v-model="sortByQuery" v-on:input="searchForVenues()" class="mb-3">
+            <b-form-select :v-model=sortByQuery v-on:input="searchForVenues()" class="mb-3">
               <option value ="STAR_RATING">Star Rating</option>
               <option value ="COST_RATING">Cost Rating</option>
               <option :disabled = "notLocated" value ="DISTANCE">Distance</option>
@@ -72,7 +72,7 @@
 
             <b-form-checkbox
               id="checkbox-1"
-              v-model="reverseQuery"
+              :v-model=reverseQuery
               v-on:input="searchForVenues()"
               name="checkbox-1"
               value=true

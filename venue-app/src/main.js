@@ -3,6 +3,8 @@ import App from './App.vue'
 import Home from './Home.vue';
 import Venues from './Venues.vue';
 import Venue from './Venue.vue';
+import Login from './Login.vue';
+import Register from './Register.vue';
 
 
 import VueRouter from 'vue-router';
@@ -27,6 +29,11 @@ const routes = [
       component: Home
   },
   {
+      path: "/login",
+      name: "login",
+      component: Login
+  },
+  {
     path: "/venues",
     name: "venues",
     component: Venues
@@ -36,6 +43,11 @@ const routes = [
     path: '/venues/:venueId',
     name: "venue",
     component: Venue
+  },
+  {
+    path: '/register',
+    name: "register",
+    component: Register
   }
 
 ];

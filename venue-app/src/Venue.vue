@@ -11,7 +11,7 @@
       <div id = "venue">
 
         <div>
-          <b-jumbotron>
+          <b-jumbotron style="background-color: white; padding-left: 5%">
             <template slot="lead">{{venue.venueName}}, {{venue.city}}</template>
 
 
@@ -21,7 +21,7 @@
 
             <p>
               <strong>Address: </strong><i>{{venue.address}}</i><br /><br />
-              <strong>Category: </strong><i>{{venue.category.categoryName}}</i><br /><br />
+              <strong>Category: </strong><i>{{venue['category']['categoryName']}}</i><br /><br />
 
               <strong>Description:</strong><br />
               {{venue.shortDescription}}
@@ -30,7 +30,7 @@
 
 
             <div v-if="venue.longDescription != ''&& venue.longDescription != null">
-              <b-button v-b-modal.modal-center>See More</b-button>
+              <b-button variant="primary" v-b-modal.modal-center>See More</b-button>
 
               <b-modal id="modal-center" centered title="More Info">
                 <p  class="my-4">{{venue.shortDescription}}<br /><br />{{venue.longDescription}}</p>
@@ -43,8 +43,7 @@
             </div>
 
             <p>
-              <br />
-              <br />
+              <hr />
               <strong>Ratings: </strong>
               <br />
               Mode Cost:
@@ -54,10 +53,37 @@
               Mean Stars:
                 <i>{{stars}}</i>
 
-
             </p>
 
+            <div v-if="reviews.length !== 0">
+              <b-button variant="primary" v-b-modal.center>See Reviews</b-button>
 
+              <b-modal id="center" centered title="All Reviews">
+                <div v-for="review in reviews">
+
+                  <p  class="my-4">
+                    <b>@{{review.reviewAuthor.username}}:</b>
+                    <br />
+                    {{review.reviewBody}}
+                    <br /><br />
+                    Stars: {{review.starRating}}
+                    <br />
+                    Cost: {{review.costRating}}
+                    <br /><br />
+                    Posted: {{review.timePosted}}
+                  </p>
+                  <hr />
+                </div>
+                <b-button disabled="true" >Write Review</b-button>
+              </b-modal>
+
+            </div>
+
+            <div v-else>
+              <b-button disabled="true" >See Reviews</b-button>
+            </div>
+
+            <hr />
             <div v-if="venue.photos.length >= 1">
 
               <strong>Photos: </strong>
@@ -70,15 +96,17 @@
                 </div>
 
               <br />
-              Administered by:
+              <hr />
+              Admin user:
               <i>{{venue.admin.username}}</i>
 
               <br />
               Added:
-              <i>{{venue.dateAdded}}</i>
+              <i>{{new Date(venue.dateAdded).toDateString()}}</i>
             </div>
 
             <div v-else>
+              <br />
               <strong>Photos:  None available</strong>
 
             </div>
@@ -106,6 +134,7 @@
         error: "",
         errorFlag: false,
         venue: [],
+        reviews:[],
         id: this.$route.params.venueId,
         stars: null,
         cost: null
@@ -115,7 +144,8 @@
     },
 
     mounted: function(){
-      this.getRatings()
+      this.getRatings();
+      this.getReviews();
       this.getSingleVenue();
     },
     methods: {
@@ -135,7 +165,6 @@
       },
 
       getRatings: function(){
-        this.searchFlag =  false;
         this.$http.get('http://localhost:4941/api/v1/venues')
         // this.$http.get('http://csse-s365.canterbury.ac.nz:4001/api/v1/venues')
           .then(function(response) {
@@ -147,6 +176,17 @@
                 this.cost =  this.venues[i].modeCostRating;
               }
             }
+
+
+          }, function(error) {
+            this.error = error;
+            this.errorFlag = true;
+          });
+      },
+      getReviews: function(){
+        this.$http.get('http://localhost:4941/api/v1/venues/'+this.id+'/reviews')
+          .then(function(response) {
+            this.reviews = response.data;
 
 
           }, function(error) {
