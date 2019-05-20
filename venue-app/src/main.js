@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
-import Home from './Home.vue';
+import Profile from './Profile.vue';
 import Venues from './Venues.vue';
 import Venue from './Venue.vue';
 import Login from './Login.vue';
@@ -12,8 +12,9 @@ import VueResource from 'vue-resource'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import BootstrapVue from 'bootstrap-vue'
+import VueCookies from 'vue-cookies'
 
-
+Vue.use(VueCookies);
 Vue.use(VueResource);
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
@@ -24,9 +25,9 @@ Vue.config.silent = true;
 const routes = [
 
   {
-      path: "/",
-      name: "home",
-      component: Home
+      path: "/profile/:profileId",
+      name: "profile",
+      component: Profile
   },
   {
       path: "/login",

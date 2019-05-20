@@ -77,7 +77,6 @@
         },
 
         userId: null,
-        errorFlag: false,
 
         bgColor: 'white',
         bgWidth: '60%',
@@ -92,7 +91,6 @@
         let errorMsg = this.validation();
         if(errorMsg === ""){
 
-
           //Submit the form of user's data
           let data = {
             "username" : this.form.username,
@@ -102,40 +100,25 @@
             "password" : this.form.password,
           };
 
-
           this.$http.post('http://localhost:4941/api/v1/users', JSON.stringify(data),{
             headers: {
               'Content-Type': 'application/json'
             }
           })
             .then((response) => {
-              if (response.status === 400){
-
-                alert(response.statusText.toString());
-                this.errorFlag = true;
-
-
-              } else {
 
                 this.userId = response.data.userId;
 
-
-              }
+                //Login the user to get an access token.
+                //Set a V-Cookie object from response.
+                //Re-route to new profile
+                this.login();
 
             }, (error) => {
-              console.log("hi");
-              this.errorFlag = true;
-              alert(error.toString());
+              console.log(error);
+              alert(error.statusText.toString());
             });
 
-          if(errorFlag === false){
-
-            //Set a localStorage object from response.
-            console.log("UHIU-------");
-            //Re-route to new profile
-            this.$router.push({ name: 'home'})
-
-          }
 
         } else {
 
@@ -143,6 +126,33 @@
 
         }
       },
+
+      login: function(){
+
+        this.$http.post('http://localhost:4941/api/v1/users/login', JSON.stringify({
+          "username": this.form.username,
+          "email": this.form.email,
+          "password": this.form.password,
+
+        }),).then((response) => {
+
+          this.$cookies.set("userId", response.body.userId);
+          this.$cookies.set("userToken", response.body.token);
+
+          this.$router.push({ name: 'profile', params: { profileId: this.userId }})
+
+
+        }, (error) =>{
+
+            console.log(error);
+            alert(error.statusText.toString());
+
+          });
+
+      },
+
+
+
 
       validation() {
 
