@@ -87,7 +87,29 @@
     methods: {
 
       submit(form) {
-        this.$router.push({name: 'venues'})
+
+        this.$http.post('http://localhost:4941/api/v1/venues/'+ this.$route.params.venueId+'reviews', JSON.stringify({
+          "reviewBody": this.form.body,
+          "starRating": this.form.stars,
+          "costRating": this.form.cost,
+
+        }),).then(() => {
+
+
+          this.$router.push({ name: 'review', params: { venueId: this.id }})
+
+        }, (error) =>{
+
+          console.log(error);
+          alert(error.statusText.toString());
+
+        });
+
+
+
+
+
+
       }
 
     }

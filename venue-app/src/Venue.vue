@@ -214,7 +214,7 @@
       },
 
       reroute(venue) {
-        this.$router.push({ name: 'review', params: { venueId: this.id }})
+        this.$router.push({ name: 'review', params: { venueId: this.id }, props: {venueName: venue.venueName}})
       }
 
     }

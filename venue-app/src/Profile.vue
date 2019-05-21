@@ -5,12 +5,17 @@
       Error retrieving this profile. Does it exist?
     </div>
 
-    <div v-else>
+    <div v-else-if="!this.$route.params.profileId">
 
-      <div id = "profile"v-bind:style="{ backgroundColor: bgColor, width: bgWidth, height: bgHeight, padding: pad}" >
+    </div>
+    <div v-else-if="" >
+
+      <div id = "profile" v-bind:style="{ backgroundColor: bgColor, width: bgWidth, height: bgHeight, padding: pad}" >
         <div v-if="profile.email != null">
 
-          <p><strong>My Profile: Edit</strong></p>
+          <p><strong>@{{profile.username}}</strong></p>
+
+            <p><br /><br /><strong>Edit:</strong></p>
 
           <b-form @submit="onSubmit" @reset="onReset">
             <b-form-group
@@ -37,12 +42,12 @@
             <b-form-group id="input-group-2" style="margin-bottom: 10px">
               <b-form-input style="margin-bottom: 10px"
                 id="input-3"
-                v-model="profile.password"
+                v-model="password"
                 required
-                placeholder="Enter password"
+                placeholder="Enter current password"
               ></b-form-input>
 
-              <b-form-input
+              <b-form-input style="margin-bottom: 10px"
                 id="input-4"
                 v-model="newPass"
                 required
@@ -52,7 +57,7 @@
 
             </b-form-group>
 
-            <b-button type="submit" variant="primary">Update</b-button>
+            <b-button type="submit" v-on:click.prevent="update()" variant="primary">Update</b-button>
           </b-form>
 
         </div>
@@ -91,6 +96,7 @@
         errorFlag: false,
         profile: [],
         newPass: null,
+        password: null,
         id: this.$route.params.profileId,
 
         bgColor: 'white',
@@ -102,8 +108,6 @@
     },
 
     mounted: function(){
-      // this.getRatings();
-      // this.getReviews();
 
        this.getProfile();
     },
@@ -147,7 +151,31 @@
         }
       },
       reroute: function(){
-        this.$router.push({ name: 'profile', params: { profileId: this.$cookies.get('userId') }})
+        this.$router.push({ name: 'profile', params: { profileId: this.id }})
+
+      }, update: function(){
+
+        this.$http.patch('http://localhost:4941/api/v1/users/'+ this.id, JSON.stringify({
+          "givenName": profile.givenName,
+          "familyName": profile.familyName,
+          "password": profile.password,
+
+        }), {headers: {
+          'X-Authorization': this.$cookies.get('userToken')
+        }} ).then((response) => {
+
+          this.$cookies.set("userId", response.body.userId);
+          this.$cookies.set("userToken", response.body.token);
+
+          this.$router.push({ name: 'profile', params: { profileId: this.userId }})
+
+
+        }, (error) =>{
+
+          console.log(error);
+          alert(error.statusText.toString());
+
+        });
       }
 
     }
