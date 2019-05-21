@@ -25,7 +25,7 @@
         console.log(this.$cookies.get('userToken'));
         this.$http.post('http://localhost:4941/api/v1/users/logout', {
           headers: {
-            'X-Authorization': this.$cookies.get('userToken')
+            'X-Authorization': this.$cookies.get('userToken').toString()
           }
 
         })

@@ -5,6 +5,7 @@ import Venues from './Venues.vue';
 import Venue from './Venue.vue';
 import Login from './Login.vue';
 import Register from './Register.vue';
+import Review from './Review.vue';
 
 
 import VueRouter from 'vue-router';
@@ -49,6 +50,11 @@ const routes = [
     path: '/register',
     name: "register",
     component: Register
+  },
+  {
+    path: '/review/:venueId',
+    name: "review",
+    component: Review
   }
 
 ];

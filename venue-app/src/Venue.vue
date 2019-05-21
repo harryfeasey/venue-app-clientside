@@ -51,37 +51,43 @@
               <br />
 
               Mean Stars:
-                <i>{{stars}}</i>
+              <i>{{stars}}</i>
 
             </p>
 
-            <div v-if="reviews.length !== 0">
+            <div>
               <b-button variant="primary" v-b-modal.center>See Reviews</b-button>
 
               <b-modal id="center" centered title="All Reviews">
-                <div v-for="review in reviews">
+                <div v-if="reviews.length !== 0">
 
-                  <p  class="my-4">
-                    <b>@{{review.reviewAuthor.username}}:</b>
-                    <br />
-                    {{review.reviewBody}}
-                    <br /><br />
-                    Stars: {{review.starRating}}
-                    <br />
-                    Cost: {{review.costRating}}
-                    <br /><br />
-                    Posted: {{review.timePosted}}
-                  </p>
-                  <hr />
+                  <div v-for="review in reviews">
+
+                    <p  class="my-4">
+                      <b>@{{review.reviewAuthor.username}}:</b>
+                      <br />
+                      {{review.reviewBody}}
+                      <br /><br />
+                      Stars: {{review.starRating}}
+                      <br />
+                      Cost: {{review.costRating}}
+                      <br /><br />
+                      Posted: {{review.timePosted}}
+                    </p>
+                    <hr />
+                  </div>
                 </div>
-                <b-button disabled="true" >Write Review</b-button>
+
+                <div v-else>
+                  <p class="my-4">No reviews yet.</p>
+                </div>
+
+                <b-button :disabled="!$cookies.get('userId')" v-on:click.prevent="reroute(venue)" >Write Review</b-button>
               </b-modal>
 
+
             </div>
 
-            <div v-else>
-              <b-button disabled="true" >See Reviews</b-button>
-            </div>
 
             <hr />
             <div v-if="venue.photos.length >= 1">
@@ -93,7 +99,7 @@
                 <b-row>
                   <b-col v-for="photo in venue.photos">
 
-                  <b-img-lazy thumbnail left style="max-width: 300px; max-height: 300px; padding: 10px" v-bind="mainProps" :src="getImage(photo)" :alt=photo.photoDescription></b-img-lazy>
+                  <b-img-lazy thumbnail left style="max-width: 300px; max-height: 300px; padding: 2px; margin-bottom: 5px;" v-bind="mainProps" :src="getImage(photo)" :alt=photo.photoDescription></b-img-lazy>
 
                   </b-col>
                 </b-row>
@@ -206,6 +212,10 @@
         return "http://localhost:4941/api/v1/venues/" + this.id + "/photos/" + photo.photoFilename
 
       },
+
+      reroute(venue) {
+        this.$router.push({ name: 'review', params: { venueId: this.id }})
+      }
 
     }
   }
