@@ -113,7 +113,7 @@
                   img-alt="Image"
                   img-top
                   tag="article"
-                  style="max-width: 20rem;"
+                  style="max-width: 17rem;"
                   class="mb-2"
                   :header=getCategory(venue.categoryId)
                   header-tag="footer"
@@ -167,7 +167,7 @@
                         img-alt="Image"
                         img-top
                         tag="article"
-                        style="max-width: 20rem;"
+                        style="max-width: 17rem;"
                         class="mb-2"
                         :header=getCategory(venue.categoryId)
                         header-tag="footer"
@@ -301,7 +301,7 @@
 
 
 
-      //TODO Make this general for all searches.
+
       searchForVenues: function(){
         let queries = "";
 

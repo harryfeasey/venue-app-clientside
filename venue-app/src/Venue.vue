@@ -64,7 +64,7 @@
                   <div v-for="review in reviews">
 
                     <p  class="my-4">
-                      <b>@{{review.reviewAuthor.username}}:</b>
+                      <b-link v-on:click="openProfile(review.reviewAuthor.userId)" style="color: blue" ><strong>@{{review.reviewAuthor.username}}:</strong></strong></b-link>
                       <br />
                       {{review.reviewBody}}
                       <br /><br />
@@ -99,7 +99,7 @@
                 <b-row>
                   <b-col v-for="photo in venue.photos">
 
-                  <b-img-lazy thumbnail left style="max-width: 300px; max-height: 300px; padding: 2px; margin-bottom: 5px;" v-bind="mainProps" :src="getImage(photo)" :alt=photo.photoDescription></b-img-lazy>
+                  <b-img-lazy thumbnail left style="max-width: 200px; max-height: 300px; padding: 2px; margin-bottom: 5px;" v-bind="mainProps" :src="getImage(photo)" :alt=photo.photoDescription></b-img-lazy>
 
                   </b-col>
                 </b-row>
@@ -113,8 +113,8 @@
               <strong>Photos:  None available</strong>
 
             </div>
-            <br />
-            <hr />
+
+
             Admin user:
             <i>{{venue.admin.username}}</i>
 
@@ -215,7 +215,13 @@
 
       reroute(venue) {
         this.$router.push({ name: 'review', params: { venueId: this.id }, props: {venueName: venue.venueName}})
+      },
+
+      openProfile(userId) {
+        this.$router.push({ name: 'profile', params: { profileId: userId }})
       }
+
+
 
     }
   }

@@ -10,7 +10,7 @@
           id="input-1"
           v-model="form.body"
           required
-          placeholder="Body..."
+          placeholder="Express yourself..."
         ></b-form-input>
       </b-form-group>
 

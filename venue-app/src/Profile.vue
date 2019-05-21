@@ -5,47 +5,42 @@
       Error retrieving this profile. Does it exist?
     </div>
 
-    <div v-else-if="!this.$route.params.profileId">
-
-    </div>
-    <div v-else-if="" >
+    <div v-else >
 
       <div id = "profile" v-bind:style="{ backgroundColor: bgColor, width: bgWidth, height: bgHeight, padding: pad}" >
+
+
+        <p><strong>@{{profile.username}}</strong></p>
+          <b-img-lazy thumbnail left style="max-width: 200px; max-height: 300px; padding: 2px; margin-bottom: 5px; margin-right: 100%" :src="getImage(profile)" alt="Image"></b-img-lazy>
+            <p><br /><br /><strong>{{profile.givenName}} {{profile.familyName}}</strong></p>
         <div v-if="profile.email != null">
+          <p><strong>{{profile.email}}</strong></p>
+          <p><br /><strong>Edit:</strong></p>
 
-          <p><strong>@{{profile.username}}</strong></p>
-
-            <p><br /><br /><strong>Edit:</strong></p>
-
-          <b-form @submit="onSubmit" @reset="onReset">
+          <b-form >
             <b-form-group
               id="input-group-1"
             >
+
+
               <b-form-input style="margin-bottom: 10px"
                 id="input-1"
-                v-model="profile.givenName"
-                type="email"
+                v-model="givenName"
                 required
-                :placeholder="profile.givenName"
+                placeholder="Given name"
               ></b-form-input>
 
               <b-form-input
                 id="input-2"
-                v-model="profile.familyName"
-                type="email"
+                v-model="familyName"
                 required
-                :placeholder="profile.familyName"
+                placeholder="Family name"
               ></b-form-input>
 
             </b-form-group>
 
             <b-form-group id="input-group-2" style="margin-bottom: 10px">
-              <b-form-input style="margin-bottom: 10px"
-                id="input-3"
-                v-model="password"
-                required
-                placeholder="Enter current password"
-              ></b-form-input>
+
 
               <b-form-input style="margin-bottom: 10px"
                 id="input-4"
@@ -57,27 +52,23 @@
 
             </b-form-group>
 
-            <b-button type="submit" v-on:click.prevent="update()" variant="primary">Update</b-button>
+            <b-button type="submit" v-on:click.prevent="submit()" variant="primary">Update</b-button>
           </b-form>
 
-        </div>
+          <b-modal ref="password-modal" hide-footer title="Enter current password to continue">
+            <div class="d-block text-center">
+              <b-form-input style="margin-bottom: 10px"
+                            id="input-7"
+                            required
+                            v-model="password"
+                            type = "password"
+              ></b-form-input>
+            </div>
+            <b-button type="submit" v-on:click.prevent="checkPass(password)" variant="primary">Continue</b-button>
+          </b-modal>
 
-        <div v-else>
-
-          <b-container >
-            <strong>{{profile.givenName}}'s Profile</strong><br/>
-            <b-row>
-
-              <b-col>{{profile.username}}</b-col>
-              <b-col>{{profile.email}}</b-col>
-              <b-col>{{profile.givenName}}</b-col>
-              <b-col>{{profile.familyName}}</b-col>
-            </b-row>
-          </b-container>
 
         </div>
-
-
       </div>
     </div>
   </div>
@@ -96,6 +87,8 @@
         errorFlag: false,
         profile: [],
         newPass: null,
+        familyName: null,
+        givenName: null,
         password: null,
         id: this.$route.params.profileId,
 
@@ -107,10 +100,15 @@
       }
     },
 
+
+
     mounted: function(){
 
        this.getProfile();
     },
+
+
+
     methods: {
 
       getProfile: function(){
@@ -153,21 +151,70 @@
       reroute: function(){
         this.$router.push({ name: 'profile', params: { profileId: this.id }})
 
-      }, update: function(){
+      },
+      submit: function() {
 
-        this.$http.patch('http://localhost:4941/api/v1/users/'+ this.id, JSON.stringify({
-          "givenName": profile.givenName,
-          "familyName": profile.familyName,
-          "password": profile.password,
 
-        }), {headers: {
-          'X-Authorization': this.$cookies.get('userToken')
-        }} ).then((response) => {
+        if (this.newPass != null) {
 
-          this.$cookies.set("userId", response.body.userId);
+          //Try login with password and continue if success.
+          //Open modal to ask for password.
+
+
+          this.showModal();
+
+        } else{
+          console.log("hola");
+
+          // Send off new names.
+          this.$http.patch('http://localhost:4941/api/v1/users/' + this.id, JSON.stringify({
+            "givenName": this.givenName,
+            "familyName": this.familyName,
+            "password": this.password
+
+          }), {
+            headers: {
+              'X-Authorization': this.$cookies.get('userToken')
+            }
+          }).then((response) => {
+
+            console.log(response);
+            // location.reload()
+
+
+          }, (error) => {
+
+            console.log(error);
+            alert(error.statusText.toString());
+
+          });
+
+
+
+        }
+
+      },
+
+      showModal() {
+        this.$refs['password-modal'].show()
+      },
+      hideModal() {
+        this.$refs['password-modal'].hide()
+      },
+
+      checkPass(password){
+        console.log(this.profile.email);
+
+        this.$http.post('http://localhost:4941/api/v1/users/login', JSON.stringify({
+          "username": this.profile.email,
+          "email": this.profile.email,
+          "password": password,
+
+        }),).then((response) => {
+
           this.$cookies.set("userToken", response.body.token);
 
-          this.$router.push({ name: 'profile', params: { profileId: this.userId }})
+          this.changePass();
 
 
         }, (error) =>{
@@ -176,7 +223,48 @@
           alert(error.statusText.toString());
 
         });
-      }
+
+
+
+      }, changePass(){
+
+
+        this.$http.patch('http://localhost:4941/api/v1/users/' + this.id, JSON.stringify({
+          "givenName": this.givenName,
+          "familyName": this.familyName,
+          "password": this.newPass
+
+        }), {
+          headers: {
+            'X-Authorization': this.$cookies.get('userToken')
+          }
+        }).then((response) => {
+
+          this.$cookies.set("userId", response.body.userId);
+          this.$cookies.set("userToken", response.body.token);
+
+          this.$router.push({name: 'profile', params: {profileId: this.userId}})
+
+
+        }, (error) => {
+
+          console.log(error);
+          alert(error.statusText.toString());
+
+        });
+
+
+
+      },
+
+      getImage: function(profile){
+        // if (profile.x !== null) {
+        //
+        //   // return "http://localhost:4941/api/v1/venues/"+venue.venueId+"/photos/"+venue.primaryPhoto
+        // } else{
+          return "/src/assets/placeholder-user.png"
+        // }
+      },
 
     }
   }
