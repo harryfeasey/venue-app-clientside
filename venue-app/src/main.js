@@ -6,6 +6,7 @@ import Venue from './Venue.vue';
 import Login from './Login.vue';
 import Register from './Register.vue';
 import Review from './Review.vue';
+import AddVenue from './AddVenue.vue';
 
 
 import VueRouter from 'vue-router';
@@ -55,6 +56,11 @@ const routes = [
     path: '/review/:venueId',
     name: "review",
     component: Review
+  },
+  {
+    path: '/venues/create',
+    name: "addVenue",
+    component: AddVenue
   }
 
 ];

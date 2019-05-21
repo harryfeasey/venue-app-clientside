@@ -84,7 +84,7 @@
                         img-alt="Image"
                         img-top
                         tag="article"
-                        style="max-width: 12rem; max-height: 10rem;"
+                        style="max-width: 15rem; max-height: 30rem;"
                         class="mb-2"
                         :header=getCategory(venue.categoryId)
                         header-tag="footer"
@@ -94,7 +94,7 @@
                         </b-card-text>
 
                         <b-card-text v-else>
-                          Mean Stars: <i>Not rated</i>
+                          Mean Stars: <i>N/A</i>
                         </b-card-text>
 
 
@@ -103,12 +103,13 @@
                         </b-card-text>
 
                         <b-card-text v-else>
-                          Mode Cost: <i>Not rated</i>
+                          Mode Cost: <i>N/A</i>
                         </b-card-text>
 
                       </b-card>
                     </div>
 
+                    <b-button style="max-height: 5rem" type="submit" v-on:click.prevent="rerouteCreateVenue()" variant="primary">Create venue</b-button>
                   </b-card-group>
                 </b-col>
               </b-row>
@@ -315,7 +316,7 @@
           .then(function (response) {
             this.searchVenues = response.data;
             this.getCategories();
-            console.log(this.searchVenues);
+            // console.log(this.searchVenues);
             this.searchFlag = true;
 
           }, function (error) {
@@ -327,7 +328,7 @@
       },
 
       getCategory: function(id){
-        console.log(id);
+        // console.log(id);
         for (var i = 0; i < this.categories.length; i++){
 
           if(this.categories[i].categoryId === id ){
@@ -356,6 +357,9 @@
             this.error = error;
             this.errorFlag = true;
           });
+      },
+      rerouteCreateVenue(venue) {
+        this.$router.push({ name: 'addVenue'})
       },
 
 
