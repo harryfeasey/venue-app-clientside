@@ -64,7 +64,7 @@
                   <div v-for="review in reviews">
 
                     <p  class="my-4">
-                      <b-link v-on:click="openProfile(review.reviewAuthor.userId)" style="color: blue" ><strong>@{{review.reviewAuthor.username}}:</strong></strong></b-link>
+                      <b-link v-on:click="openProfile(review.reviewAuthor.userId)" style="color: royalblue" ><strong>@{{review.reviewAuthor.username}}:</strong></strong></b-link>
                       <br />
                       {{review.reviewBody}}
                       <br /><br />
@@ -82,7 +82,7 @@
                   <p class="my-4">No reviews yet.</p>
                 </div>
 
-                <b-button :disabled="!$cookies.get('userId')" v-on:click.prevent="reroute(venue)" >Write Review</b-button>
+                <b-button :disabled="!$cookies.get('userId')" variant="primary" v-on:click.prevent="reroute(venue)" >Write Review</b-button>
               </b-modal>
 
 

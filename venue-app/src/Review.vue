@@ -88,12 +88,15 @@
 
       submit(form) {
 
-        this.$http.post('http://localhost:4941/api/v1/venues/'+ this.$route.params.venueId+'reviews', JSON.stringify({
+        this.$http.post('http://localhost:4941/api/v1/venues/'+ this.$route.params.venueId+'/reviews', JSON.stringify({
           "reviewBody": this.form.body,
           "starRating": this.form.stars,
           "costRating": this.form.cost,
 
-        }),).then(() => {
+        }),{
+          headers: {
+            'X-Authorization': this.$cookies.get('userToken')
+          }}).then(() => {
 
 
           this.$router.push({ name: 'review', params: { venueId: this.id }})
@@ -104,10 +107,6 @@
           alert(error.statusText.toString());
 
         });
-
-
-
-
 
 
       }

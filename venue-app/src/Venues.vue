@@ -350,7 +350,8 @@
         .then(function (response) {
             this.searchVenues = response.data;
             this.getCategories();
-            this.searchFlag = true;
+
+          this.searchFlag = true;
 
           }, function (error) {
             this.error = error;
