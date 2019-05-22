@@ -7,6 +7,7 @@ import Login from './Login.vue';
 import Register from './Register.vue';
 import Review from './Review.vue';
 import AddVenue from './AddVenue.vue';
+import EditVenue from './EditVenue.vue';
 
 
 import VueRouter from 'vue-router';
@@ -43,7 +44,7 @@ const routes = [
 
   },
   {
-    path: '/venues/:venueId',
+    path: '/venues/view/:venueId',
     name: "venue",
     component: Venue
   },
@@ -61,7 +62,13 @@ const routes = [
     path: '/venues/create',
     name: "addVenue",
     component: AddVenue
-  }
+  },
+  {
+    path: '/venues/edit/:venueId',
+    name: "editVenue",
+    component: EditVenue
+  },
+  { path: '/', redirect: '/venues' }
 
 ];
 

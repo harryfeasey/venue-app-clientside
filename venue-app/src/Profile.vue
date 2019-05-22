@@ -8,7 +8,7 @@
 
     <div v-else >
 
-      <div id = "profile" v-bind:style="{ backgroundColor: bgColor, width: bgWidth, height: bgHeight, padding: pad}" >
+      <div id = "profile" v-bind:style="{ backgroundColor: bgColor, height: bgHeight, padding: pad}" >
 
 
         <p><strong>@{{profile.username}}</strong></p>
@@ -24,14 +24,14 @@
             >
 
 
-              <b-form-input style="margin-bottom: 5px"
+              <b-form-input style="margin-bottom: 5px; width: 60%"
                 id="input-1"
                 v-model="givenName"
                 required
                 :placeholder=givenName
               ></b-form-input>
 
-              <b-form-input
+              <b-form-input style="width: 60%"
                 id="input-2"
                 v-model="familyName"
                 required
@@ -43,7 +43,7 @@
             <b-form-group id="input-group-2" style="margin-bottom: 5px">
 
 
-              <b-form-input style="margin-bottom: 5px"
+              <b-form-input style="margin-bottom: 5px; width: 60%"
                 id="input-4"
                 v-model="newPass"
                 required
@@ -70,7 +70,7 @@
           </b-modal>
 
 
-          <div v-if = "searchFlag" v-bind:style="{ padding: pad_admin, marginLeft: left_margin}">
+          <div v-if = "searchFlag">
             <b-container>
               <b-row>
                 <b-col>
@@ -84,7 +84,7 @@
                         img-alt="Image"
                         img-top
                         tag="article"
-                        style="max-width: 15rem; max-height: 30rem;"
+                        style="max-width: 15rem; max-height: 32rem;"
                         class="mb-2"
                         :header=getCategory(venue.categoryId)
                         header-tag="footer"
@@ -106,10 +106,11 @@
                           Mode Cost: <i>N/A</i>
                         </b-card-text>
 
+                        <b-button variant="primary" v-on:click.prevent="rerouteEditVenue(venue.venueId)">Edit</b-button>
                       </b-card>
                     </div>
 
-                    <b-button style="max-height: 5rem" type="submit" v-on:click.prevent="rerouteCreateVenue()" variant="primary">Create venue</b-button>
+                    <b-button style="max-height: 4rem" type="submit" v-on:click.prevent="rerouteCreateVenue()" variant="primary">Create venue</b-button>
                   </b-card-group>
                 </b-col>
               </b-row>
@@ -147,11 +148,10 @@
         id: this.$route.params.profileId,
 
         bgColor: 'white',
-        bgWidth: '60%',
         bgHeight: '30px',
         pad: "0% 5% 2% 5%",
         pad_admin: "1% 1% 2% 1%",
-        left_margin: "-3%"
+
 
       }
     },
@@ -360,6 +360,9 @@
       },
       rerouteCreateVenue(venue) {
         this.$router.push({ name: 'addVenue'})
+      },
+      rerouteEditVenue(venueId) {
+        this.$router.push({ name: 'editVenue', params: { venueId: venueId }})
       },
 
 
